@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	<title>webaudio.js example</title>
+	<script src="webaudio.js"></script>
+</head>
+<body>
+
+<button id="play">再生</button>
+<button id="stop">停止</button>
+<button id="media">マイクから音を取得</button>
+
+<p id="output"></p>
+
+<script>
+window.onload = function() {
+	var audio = new WebAudio({
+		url: 'sound',
+		volume: .2,
+		loop: true,
+		userMedia: { audio : true }
+	});
+
+	var timer;
+	var play = document.querySelector('#play');
+	var stop = document.querySelector('#stop');
+	var media = document.querySelector('#media');
+	var output = document.querySelector('#output');
+
+	media.addEventListener('click', function() {
+		var analyzer = audio.startUserMedia();
+		timer = setInterval(function() {
+			var data = new Uint8Array(analyzer.frequencyBinCount);
+			analyzer.getByteFrequencyData(data);
+			output.innerHTML = '';
+			for(i = 0; i < data.length ; i+=1){
+				var str = document.createTextNode(data[i]);
+				var sepa = document.createTextNode(', ');
+				output.appendChild(str);
+				output.appendChild(sepa);
+			}
+		}, 1000);
+	});
+
+	play.addEventListener('click', function() {
+		var analyzer = audio.play();
+		timer = setInterval(function() {
+			var data = new Uint8Array(analyzer.frequencyBinCount);
+			analyzer.getByteFrequencyData(data);
+			output.innerHTML = '';
+			for(i = 0; i < data.length ; i+=1){
+				var str = document.createTextNode(data[i]);
+				var sepa = document.createTextNode(', ');
+				output.appendChild(str);
+				output.appendChild(sepa);
+			}
+		}, 1000);
+	});
+
+	stop.addEventListener('click', function() {
+		audio.stop();
+		clearInterval(timer);
+	});
+};
+</script>
+	
+</body>
+</html>
