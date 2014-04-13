@@ -94,12 +94,12 @@ var WebAudio = function(arg) {
 	function supportedAudioFormat(){
 		var audio = new Audio();
 		var extention = "";
-		if(audio.canPlayType("audio/ogg") == "probably" || audio.canPlayType("audio/ogg") == "maybe"){
-		 	extention = ".ogg";
+		if(audio.canPlayType("audio/mp3") == "probably" || audio.canPlayType("audio/mp3") == "maybe"){
+		 	extention = ".mp3";
 		} else if(audio.canPlayType("audio/wav") == "probably" || audio.canPlayType("audio/wav") == "maybe"){
 		 	extention = ".wav";
-		} else if(audio.canPlayType("audio/mp3") == "probably" || audio.canPlayType("audio/mp3") == "maybe"){
-		 	extention = ".mp3";
+		} else if(audio.canPlayType("audio/ogg") == "probably" || audio.canPlayType("audio/ogg") == "maybe"){
+		 	extention = ".ogg";
 		} else {
 			return false;
 		}
