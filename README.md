@@ -15,7 +15,25 @@ webaudio.js
 }
 ```
 
+##Example
+```javascript
+var audio = new WebAudio({
+	url: 'sound',
+	volume: .2,
+	loop: true,
+	userMedia: { audio : true }
+});
+audio.play();
+```
 ##Method
-* play
-* stop
-* startUserMedia
+* play(delay, start);
+* stop();
+* startUserMedia();
+* get('property');
+* set('property', value);
+
+##Property
+* analyserNode
+* currentTime
+* url
+* loop

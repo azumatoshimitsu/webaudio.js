@@ -8,9 +8,12 @@
 </head>
 <body>
 
+<h1>webaudio.js example</h1>
+
 <button id="play">再生</button>
 <button id="stop">停止</button>
 <button id="media">マイクから音を取得</button>
+<button id="set">プロパティセットテスト</button>
 
 <p id="output"></p>
 
@@ -27,28 +30,15 @@ window.onload = function() {
 	var play = document.querySelector('#play');
 	var stop = document.querySelector('#stop');
 	var media = document.querySelector('#media');
+	var set = document.querySelector('#set');
 	var output = document.querySelector('#output');
 
-	media.addEventListener('click', function() {
-		var analyzer = audio.startUserMedia();
-		timer = setInterval(function() {
-			var data = new Uint8Array(analyzer.frequencyBinCount);
-			analyzer.getByteFrequencyData(data);
-			output.innerHTML = '';
-			for(i = 0; i < data.length ; i+=1){
-				var str = document.createTextNode(data[i]);
-				var sepa = document.createTextNode(', ');
-				output.appendChild(str);
-				output.appendChild(sepa);
-			}
-		}, 1000);
-	});
-
 	play.addEventListener('click', function() {
-		var analyzer = audio.play();
+		var analyser = audio.get(['analyserNode']);
+		audio.play();
 		timer = setInterval(function() {
-			var data = new Uint8Array(analyzer.frequencyBinCount);
-			analyzer.getByteFrequencyData(data);
+			var data = new Uint8Array(analyser.frequencyBinCount);
+			analyser.getByteFrequencyData(data);
 			output.innerHTML = '';
 			for(i = 0; i < data.length ; i+=1){
 				var str = document.createTextNode(data[i]);
@@ -62,6 +52,27 @@ window.onload = function() {
 	stop.addEventListener('click', function() {
 		audio.stop();
 		clearInterval(timer);
+	});
+
+	media.addEventListener('click', function() {
+		var analyser = audio.get(['analyserNode']);
+		audio.startUserMedia();
+		timer = setInterval(function() {
+			var data = new Uint8Array(analyser.frequencyBinCount);
+			analyser.getByteFrequencyData(data);
+			output.innerHTML = '';
+			for(i = 0; i < data.length ; i+=1){
+				var str = document.createTextNode(data[i]);
+				var sepa = document.createTextNode(', ');
+				output.appendChild(str);
+				output.appendChild(sepa);
+			}
+		}, 1000);
+	});
+
+	set.addEventListener('click', function() {
+		var prop = audio.set('currentTime', 2);
+		audio.play();
 	});
 };
 </script>

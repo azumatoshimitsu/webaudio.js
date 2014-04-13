@@ -11,35 +11,44 @@ var WebAudio = function(arg) {
 	if(!window.AudioContext) {
 		throw new Error(['AudioContext is not supported']);
 	}
-
 	var context = new AudioContext();
-	var loop = arg.url || false;
 	var extention = supportedAudioFormat();
-	var url = arg.url + extention;
 	var userMedia = arg.userMedia;
-	var buffer, source, timer, stream, streamNode;
-	var currentTime = 0;
+	var buffer, source, stream, streamNode;
+	var prop = {};
+	prop.currentTime = 0;
+	prop.url = arg.url + extention;
+	prop.loop = arg.loop || false;
 
-	var analyser = context.createAnalyser();
-		analyser.fftSize = (arg.fftSize || 2048);
-		analyser.minDecibels = (arg.minDecibels || -100);
-		analyser.smoothingTimeConstant = (arg.smoothingTimeConstant || 0.8);
+	prop.analyserNode = context.createAnalyser();
+	prop.analyserNode.fftSize = (arg.fftSize || 2048);
+	prop.analyserNode.minDecibels = (arg.minDecibels || -100);
+	prop.analyserNode.smoothingTimeConstant = (arg.smoothingTimeConstant || 0.8);
 
 	return {
+		get: function(propName) {
+			if(!prop[propName]) {
+				throw new Error([propName + ' Can not be get']);
+			}
+			return prop[propName];
+		},
+		set: function(propName, value) {
+			prop[propName] = value;
+		},
 		play: function (delay, start) {
 			var delay = delay || 0;
-			var start = start || currentTime;
+			var start = start || prop.currentTime;
 			if(!source) {
 				var req = new XMLHttpRequest();
-				req.open("GET", url, true);
+				req.open("GET", prop.url, true);
 				req.responseType = "arraybuffer";
 				req.onload = function(e) {
 					context.decodeAudioData(req.response, function(buf){
 						buffer = buf;
 						source = context.createBufferSource();
 						source.buffer = buffer;
-						source.loop = loop;
-						source.connect(analyser);
+						source.loop = prop.loop;
+						source.connect(prop.analyserNode);
 						source.connect(context.destination);//出力先に接続
 						source.start(delay, start);
 
@@ -50,17 +59,17 @@ var WebAudio = function(arg) {
 				source.stop(delay, start);
 				source = context.createBufferSource();
 				source.buffer = buffer;
-				source.loop = loop;
-				source.connect(analyser);
+				source.loop = prop.loop;
+				source.connect(prop.analyserNode);
 				source.connect(context.destination);
 				source.start(delay, start);
 			}
-			return analyser;
 		},
 		stop: function () {
-			source.stop();
-			currentTime = context.currentTime;
-			clearInterval(timer);
+			if(source) {
+				source.stop();
+				prop.currentTime = context.currentTime;
+			}
 		},
 		startUserMedia: function() {
 			if(!userMedia ) {
@@ -73,13 +82,12 @@ var WebAudio = function(arg) {
 				userMedia,
 				function(stream) {
 					streamNode = context.createMediaStreamSource(stream);
-					streamNode.connect(analyser);
+					streamNode.connect(prop.analyserNode);
 				},
 				function(e) {
 					throw new Error(e);
 				}
 			);
-			return analyser;
 		}
 	};
 
