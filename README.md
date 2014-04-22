@@ -19,7 +19,6 @@ webaudio.js
 ```javascript
 var audio = new WebAudio({
 	url: 'sound',
-	volume: .2,
 	loop: true,
 	userMedia: { audio : true }
 });
@@ -31,6 +30,8 @@ audio.play();
 * startUserMedia();
 * get('property');
 * set('property', value);
+* oscPlay(hz, wave);
+* oscStop();
 
 ##Property
 * analyserNode

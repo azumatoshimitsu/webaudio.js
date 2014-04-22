@@ -5,32 +5,91 @@
 	<meta name="viewport" content="width=device-width">
 	<title>webaudio.js example</title>
 	<script src="webaudio.js"></script>
+<style>
+body {
+	margin: 20px auto 100px auto;
+	max-width: 800px;
+}
+.wrap-code {
+	background: #333;
+	margin-bottom: 40px;
+	padding: 16px 20px; 
+	color: #FFF;
+	border-radius: 10px;
+}
+code {
+	white-space: pre;
+}
+button {
+	background: #499bea; /* Old browsers */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#499bea), color-stop(100%,#207ce5)); 
+	background: -webkit-linear-gradient(top,  #499bea 0%,#207ce5 100%);
+	background: -ms-linear-gradient(top,  #499bea 0%,#207ce5 100%);
+	background: linear-gradient(to bottom,  #499bea 0%,#207ce5 100%);
+	color:#FFF;
+	padding:5px 10px;
+	border-radius:8px;
+	font-size:90%;
+	border: 0;
+}
+</style>
 </head>
 <body>
 
 <h1>webaudio.js example</h1>
 
-<button id="play">再生</button>
-<button id="stop">停止</button>
-<button id="media">マイクから音を取得</button>
-<button id="set">プロパティセットテスト</button>
+<section>
+<h2>Initialize</h2>
+<p class="wrap-code"><code>var audio = new WebAudio({
+	url: 'sound',
+	loop: true,
+	userMedia: { audio : true }
+});</code></p>
+</section>
 
-<p id="output"></p>
+<section>
+<h2>Method</h2>
+<button id="play">再生</button> <button class="stop">停止</button><br>	
+<textarea id="output" rows="3" cols="40"></textarea>
+<p class="wrap-code"><code>audio.play(delay, start);
+audio.stop();</code></p>
+
+<button id="media">マイクから音を取得</button>
+<p class="wrap-code"><code>audio.startUserMedia();</code></p>
+
+<button id="set">プロパティセットテスト</button> <button class="stop">停止</button>
+<p class="wrap-code"><code>audio.set('Property', value);</code></p>
+
+<button id="osc">オシレータテスト</button> <button id="osc-stop">オシレータ停止テスト</button>
+<input type="range" min="100" max="1200" id="hz" step="1">
+<select id="type">
+	<option value="SINE">SINE</option>
+	<option value="SQUARE">SQUARE</option>
+	<option value="SAWTOOTH">SAWTOOTH</option>
+	<option value="TRIANGLE">TRIANGLE</option>
+</select>
+<p class="wrap-code"><code>audio.oscPlay(n, 'TYPE'); //SINE, SQUARE, SAWTOOTH, TRIANGLE, CUSTOM:
+audio.oscStop();</code></p>
+
+</section>
 
 <script>
 window.onload = function() {
 	var audio = new WebAudio({
 		url: 'sound',
-		volume: .2,
 		loop: true,
 		userMedia: { audio : true }
 	});
 
 	var timer;
 	var play = document.querySelector('#play');
-	var stop = document.querySelector('#stop');
+	var stop = document.querySelectorAll('.stop');
 	var media = document.querySelector('#media');
 	var set = document.querySelector('#set');
+	var osc = document.querySelector('#osc');
+	var oscStop = document.querySelector('#osc-stop');
+	var hz = document.querySelector('#hz');
+	var type = document.querySelector('#type');
 	var output = document.querySelector('#output');
 
 	play.addEventListener('click', function() {
@@ -49,7 +108,12 @@ window.onload = function() {
 		}, 1000);
 	});
 
-	stop.addEventListener('click', function() {
+	stop[0].addEventListener('click', function() {
+		audio.stop();
+		clearInterval(timer);
+	});
+
+	stop[1].addEventListener('click', function() {
 		audio.stop();
 		clearInterval(timer);
 	});
@@ -61,7 +125,7 @@ window.onload = function() {
 			var data = new Uint8Array(analyser.frequencyBinCount);
 			analyser.getByteFrequencyData(data);
 			output.innerHTML = '';
-			for(i = 0; i < data.length ; i+=1){
+			for(i = 0; i < data.length ; i += 1){
 				var str = document.createTextNode(data[i]);
 				var sepa = document.createTextNode(', ');
 				output.appendChild(str);
@@ -73,6 +137,16 @@ window.onload = function() {
 	set.addEventListener('click', function() {
 		var prop = audio.set('currentTime', 2);
 		audio.play();
+	});
+
+	osc.addEventListener('click', function() {
+		var setHz = hz.value;
+		var t = type.options[type.selectedIndex].value;
+		audio.oscPlay(setHz, t);
+	});
+
+	oscStop.addEventListener('click', function() {
+		audio.oscStop();
 	});
 };
 </script>

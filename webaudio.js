@@ -11,10 +11,11 @@ var WebAudio = function(arg) {
 	if(!window.AudioContext) {
 		throw new Error(['AudioContext is not supported']);
 	}
+
 	var context = new AudioContext();
 	var extention = supportedAudioFormat();
 	var userMedia = arg.userMedia;
-	var buffer, source, stream, streamNode;
+	var buffer, source, stream, streamNode, oscillator;
 	var prop = {};
 	prop.currentTime = 0;
 	prop.url = arg.url + extention;
@@ -51,7 +52,6 @@ var WebAudio = function(arg) {
 						source.connect(prop.analyserNode);
 						source.connect(context.destination);//出力先に接続
 						source.start(delay, start);
-
 					}, function(e){throw new Error(e);});
 				}
 				req.send();
@@ -88,6 +88,21 @@ var WebAudio = function(arg) {
 					throw new Error(e);
 				}
 			);
+		},
+		oscPlay: function(hz, wave) {
+            var h = hz || 440;
+            var t = wave || 'SINE';
+            if(oscillator)
+            	oscillator.stop(0);
+            oscillator = context.createOscillator();
+            oscillator.connect(context.destination);//オシレータへ接続
+            oscillator.frequency.value = h;//周波数をnHzに
+            oscillator.type = oscillator[t];//オシレータも波形を選択
+            oscillator.start(0);//再生
+		},
+		oscStop: function() {
+            if(oscillator)
+            	oscillator.stop(0);
 		}
 	};
 
