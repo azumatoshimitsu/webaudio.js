@@ -76,7 +76,7 @@ var WebAudio = function(arg) {
 		},
 		stop: function () {
 			if(source) {
-				source.stop();
+				source.stop(0);
 				prop.currentTime = context.currentTime;
 			}
 		},
