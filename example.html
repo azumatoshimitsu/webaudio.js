@@ -49,17 +49,19 @@ button {
 
 <section>
 <h2>Method</h2>
+
+<h3>play();</h3>
+
 <button id="play">再生</button> <button class="stop">停止</button><br>	
 <textarea id="output" rows="3" cols="40"></textarea>
 <p class="wrap-code"><code>audio.play(delay, start);
 audio.stop();</code></p>
 
+<h3>startUserMedia();</h3>
 <button id="media">マイクから音を取得</button>
 <p class="wrap-code"><code>audio.startUserMedia();</code></p>
 
-<button id="set">プロパティセットテスト</button> <button class="stop">停止</button>
-<p class="wrap-code"><code>audio.set('Property', value);</code></p>
-
+<h3>oscPlay();</h3>
 <button id="osc">オシレータテスト</button> <button id="osc-stop">オシレータ停止テスト</button>
 <input type="range" min="100" max="1200" id="hz" step="1">
 <select id="type">
@@ -68,8 +70,18 @@ audio.stop();</code></p>
 	<option value="SAWTOOTH">SAWTOOTH</option>
 	<option value="TRIANGLE">TRIANGLE</option>
 </select>
-<p class="wrap-code"><code>audio.oscPlay(n, 'TYPE'); //SINE, SQUARE, SAWTOOTH, TRIANGLE, CUSTOM:
+<p class="wrap-code"><code>audio.oscPlay(n, 'TYPE');
 audio.oscStop();</code></p>
+
+<h3>set();</h3>
+<button id="set">開始位置セット</button>
+<p class="wrap-code"><code>var prop = audio.set('currentTime', 2);
+audio.play();</code></p>
+<button id="gain">音量セット</button>
+<input type="range" min="0" max="1" step="0.1" id="gain-value">
+<button class="stop">停止</button>
+<p class="wrap-code"><code>audio.set('gainNodeValue', val);
+audio.play();</code></p>
 
 </section>
 
@@ -78,6 +90,7 @@ window.onload = function() {
 	var audio = new WebAudio({
 		url: 'sound',
 		loop: true,
+		value: .5,
 		userMedia: { audio : true }
 	});
 
@@ -87,6 +100,8 @@ window.onload = function() {
 	var media = document.querySelector('#media');
 	var set = document.querySelector('#set');
 	var osc = document.querySelector('#osc');
+	var gain = document.querySelector('#gain');
+	var gainValue = document.querySelector('#gain-value');
 	var oscStop = document.querySelector('#osc-stop');
 	var hz = document.querySelector('#hz');
 	var type = document.querySelector('#type');
@@ -139,9 +154,17 @@ window.onload = function() {
 		audio.play();
 	});
 
+	gain.addEventListener('click', function() {
+		var val = Number(gainValue.value);
+		audio.set('gainNodeValue', val);
+		audio.play();
+	});
+
 	osc.addEventListener('click', function() {
 		var setHz = hz.value;
 		var t = type.options[type.selectedIndex].value;
+		var val = Number(gainValue.value);
+		audio.set('gainNodeValue', val);
 		audio.oscPlay(setHz, t);
 	});
 

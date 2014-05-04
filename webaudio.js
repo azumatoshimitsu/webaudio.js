@@ -26,6 +26,9 @@ var WebAudio = function(arg) {
 	prop.analyserNode.minDecibels = (arg.minDecibels || -100);
 	prop.analyserNode.smoothingTimeConstant = (arg.smoothingTimeConstant || 0.8);
 
+	prop.gainNode = context.createGainNode();
+	prop.gainNode.gain.value = arg.value || 1;
+
 	return {
 		get: function(propName) {
 			if(!prop[propName]) {
@@ -34,7 +37,11 @@ var WebAudio = function(arg) {
 			return prop[propName];
 		},
 		set: function(propName, value) {
-			prop[propName] = value;
+			if(propName === 'gainNodeValue') {
+				prop['gainNode'].gain.value = value;
+			} else {
+				prop[propName] = value;
+			}
 		},
 		play: function (delay, start) {
 			var delay = delay || 0;
@@ -49,8 +56,9 @@ var WebAudio = function(arg) {
 						source = context.createBufferSource();
 						source.buffer = buffer;
 						source.loop = prop.loop;
+						source.connect(prop.gainNode);
 						source.connect(prop.analyserNode);
-						source.connect(context.destination);//出力先に接続
+						prop.gainNode.connect(context.destination);//出力先に接続
 						source.start(delay, start);
 					}, function(e){throw new Error(e);});
 				}
@@ -60,8 +68,9 @@ var WebAudio = function(arg) {
 				source = context.createBufferSource();
 				source.buffer = buffer;
 				source.loop = prop.loop;
+				source.connect(prop.gainNode);
 				source.connect(prop.analyserNode);
-				source.connect(context.destination);
+				prop.gainNode.connect(context.destination);
 				source.start(delay, start);
 			}
 		},
@@ -95,9 +104,10 @@ var WebAudio = function(arg) {
             if(oscillator)
             	oscillator.stop(0);
             oscillator = context.createOscillator();
-            oscillator.connect(context.destination);//オシレータへ接続
-            oscillator.frequency.value = h;//周波数をnHzに
-            oscillator.type = oscillator[t];//オシレータも波形を選択
+            oscillator.connect(prop.gainNode);
+            prop.gainNode.connect(context.destination);
+            oscillator.frequency.value = h;
+            oscillator.type = oscillator[t];//波形を選択
             oscillator.start(0);//再生
 		},
 		oscStop: function() {
