@@ -9,6 +9,7 @@
 body {
 	margin: 20px auto 100px auto;
 	max-width: 800px;
+	padding: 0 20px;
 }
 .wrap-code {
 	background: #333;
@@ -21,10 +22,7 @@ code {
 	white-space: pre;
 }
 button {
-	background: #499bea; /* Old browsers */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#499bea), color-stop(100%,#207ce5)); 
-	background: -webkit-linear-gradient(top,  #499bea 0%,#207ce5 100%);
-	background: -ms-linear-gradient(top,  #499bea 0%,#207ce5 100%);
+	background: #499bea;
 	background: linear-gradient(to bottom,  #499bea 0%,#207ce5 100%);
 	color:#FFF;
 	padding:5px 10px;
@@ -62,7 +60,7 @@ audio.stop();</code></p>
 <p class="wrap-code"><code>audio.startUserMedia();</code></p>
 
 <h3>oscPlay();</h3>
-<button id="osc">オシレータテスト</button> <button id="osc-stop">オシレータ停止テスト</button>
+<button id="osc">オシレータから音を生成</button> <button id="osc-stop">停止</button>
 <input type="range" min="100" max="1200" id="hz" step="1">
 <select id="type">
 	<option value="SINE">SINE</option>

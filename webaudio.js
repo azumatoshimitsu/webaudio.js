@@ -53,30 +53,18 @@ var WebAudio = function(arg) {
 				req.onload = function(e) {
 					context.decodeAudioData(req.response, function(buf){
 						buffer = buf;
-						source = context.createBufferSource();
-						source.buffer = buffer;
-						source.loop = prop.loop;
-						source.connect(prop.gainNode);
-						source.connect(prop.analyserNode);
-						prop.gainNode.connect(context.destination);//出力先に接続
-						source.start(delay, start);
+						playSource(delay, start);
 					}, function(e){throw new Error(e);});
 				}
 				req.send();
 			} else {
-				source.stop(delay, start);
-				source = context.createBufferSource();
-				source.buffer = buffer;
-				source.loop = prop.loop;
-				source.connect(prop.gainNode);
-				source.connect(prop.analyserNode);
-				prop.gainNode.connect(context.destination);
-				source.start(delay, start);
+				source.stop(0);
+				playSource(delay, start);
 			}
 		},
 		stop: function () {
 			if(source) {
-				source.stop(0);
+					source.stop(0);
 				prop.currentTime = context.currentTime;
 			}
 		},
@@ -114,6 +102,16 @@ var WebAudio = function(arg) {
             if(oscillator)
             	oscillator.stop(0);
 		}
+	};
+
+	function playSource(delay, start) {
+		source = context.createBufferSource();
+		source.buffer = buffer;
+		source.loop = prop.loop;
+		source.connect(prop.gainNode);
+		source.connect(prop.analyserNode);
+		prop.gainNode.connect(context.destination);
+		source.start(delay, start);
 	};
 
 	function supportedAudioFormat(){
