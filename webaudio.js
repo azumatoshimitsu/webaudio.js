@@ -26,7 +26,7 @@ var WebAudio = function(arg) {
 	prop.analyserNode.minDecibels = (arg.minDecibels || -100);
 	prop.analyserNode.smoothingTimeConstant = (arg.smoothingTimeConstant || 0.8);
 
-	prop.gainNode = context.createGainNode();
+	prop.gainNode = context.createGain() || context.createGainNode();
 	prop.gainNode.gain.value = arg.value || 1;
 
 	return {
